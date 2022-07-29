@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.devhub.fleamarket.mapper.OrderMapper">
+
+    <resultMap id="OrderResultMap" type="club.devhub.fleamarket.entity.Order">
+        <id property="orderId" column="orderId"/>
+        <result property="buyerId" column="buyerId"/>
+        <result property="commodityId" column="commodityId"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="OrderVoResultMap" type="club.devhub.fleamarket.vo.OrderVo">
+        <id property="orderId" column="orderId"/>
+        <result property="buyerId" column="buyerId"/>
+        <result property="sellerId" column="user_id"/>
+        <result property="commodityName" column="commodity_name"/>
+        <result property="commodityId" column="commodityId"/>
+        <result property="category" column="category"/>
+        <result property="price" column="price"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into t_order(buyerId, commodityId)
+        values (#{userId}, #{commodityId})
+    </insert>
+    <update id="changeState">
+        update t_order
+        set state = 1
+        where orderId = #{orderId}
+    </update>
+    <select id="getOrderById" resultMap="OrderResultMap">
+        select *
+        from t_order
+        where orderId = #{orderId}
+    </select>
+    <select id="getList" resultMap="OrderVoResultMap">
+        select
+        tor.orderId,tc.commodity_name,tc.category,tc.user_id,tc.price,tor.state,tor.buyerId,tor.create_time,tor.update_time
+        from t_order as tor
+        left join t_commodity as tc on tc.commodityId = tor.commodityId
+        <where>
+            <if test="category != null">
+                tc.category = #{category}
+            </if>
+            <if test="state != null">
+                and tor.state =#{state}
+            </if>
+            and (tor.buyerId =#{userId} or tc.user_id=#{userId})
+        </where>
+        order by orderId desc
+    </select>
+
+</mapper>

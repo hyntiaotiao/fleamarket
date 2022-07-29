@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.devhub.fleamarket.mapper.CommodityMapper">
+
+    <resultMap id="CommodityResultMap" type="club.devhub.fleamarket.entity.Commodity">
+        <id property="commodityId" column="commodityId"/>
+        <result property="commodityName" column="commodity_name"/>
+        <result property="category" column="category"/>
+        <result property="price" column="price"/>
+        <result property="message" column="message"/>
+        <result property="sold" column="sold"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="CommodityVoResultMap" type="club.devhub.fleamarket.vo.CommodityVo">
+        <result property="commodityName" column="commodity_name"/>
+        <result property="category" column="category"/>
+        <result property="price" column="price"/>
+        <result property="message" column="message"/>
+        <result property="sold" column="sold"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into t_commodity(commodity_name, category, price, message, user_id)
+        values (#{commodityName}, #{category}, #{price}, #{message}, #{userId})
+    </insert>
+    <update id="update">
+        update t_commodity
+        set commodity_name=#{commodityName},
+            category=#{category},
+            price=#{price},
+            message=#{message}
+        where commodityId=#{commodityId}
+    </update>
+    <update id="changeSold">
+        update t_commodity
+        set sold = 1
+        where commodityId=#{commodiyuId}
+    </update>
+    <delete id="deleteById">
+        delete from t_commodity where commodityId = #{commodityId}
+    </delete>
+    <select id="getCommodityById" resultMap="CommodityResultMap">
+        select *
+        from t_commodity
+        where commodityId=#{commmodityId}
+    </select>
+
+    <select id="getCommodityVoById" resultMap="CommodityVoResultMap">
+        select *
+        from t_commodity
+        where commodityId=#{commodityId}
+    </select>
+    <select id="getList"  resultMap="CommodityVoResultMap">
+        select commodity_name,category,user_id,price,message,sold,create_time
+        from t_commodity
+        <where>
+            <if test="category != null">
+                category = #{category}
+            </if>
+            <if test="userId != null">
+                and user_id =#{userId}
+            </if>
+            <if test="sold != null">
+                and sold =#{sold}
+            </if>
+        </where>
+        order by commodityId desc
+    </select>
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.devhub.fleamarket.mapper.EvaluationMapper">
+
+    <resultMap id="EvaluationResultMap" type="club.devhub.fleamarket.entity.Evaluation">
+        <result property="evaluateid" column="evaluateId"/>
+        <result property="commodityid" column="commodityId"/>
+        <result property="userid" column="userId"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into t_evaluation (commodityId, userId, content)
+        values (#{commodityId}, #{userId}, #{evaluation})
+    </insert>
+    <update id="update">
+        update t_evaluation
+        set content=#{evaluation}
+        where userId = #{userId}
+          and commodityId = #{commodityId}
+    </update>
+    <delete id="delete">
+        delete
+        from t_evaluation
+        where evaluateId=#{evaluateId}
+    </delete>
+    <select id="getEvaluationById" resultMap="EvaluationResultMap">
+        select *
+        from t_evaluation
+        where evaluateId = #{evaluateId}
+    </select>
+</mapper>

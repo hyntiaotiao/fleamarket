@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.devhub.fleamarket.mapper.ReportsMapper">
+
+    <resultMap id="CommodityResultMap" type="club.devhub.fleamarket.vo.ReportVo">
+        <id property="reportId" column="reportId"/>
+        <result property="commodityId" column="commodityId"/>
+        <result property="userId" column="tr_uid"/>
+        <result property="reportedId" column="tc_uid"/>
+        <result property="reason" column="reason"/>
+        <result property="message" column="message"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into t_reports(commodityId, user_id, reason)
+        values (#{commodityId}, #{userId}, #{reason})
+    </insert>
+    <update id="changeState">
+        update t_reports
+        set audit_state=1
+        where reportId=#{reportId}
+    </update>
+
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from t_reports
+        where commodityId = #{commodity}
+          and user_id = #{userId}
+    </select>
+    <select id="getList" resultMap="CommodityResultMap">
+        select tr.reportId,
+               tr.commodityId,
+               tr.user_id tr_uid,
+               tc.user_id tc_uid,
+               tr.reason,
+               tc.message,
+               tr.create_time
+        from t_reports as tr
+                 left join t_commodity as tc
+                           on tr.commodityId = tc.commodityId
+        where audit_state = 0
+        order by reportId desc
+    </select>
+</mapper>

@@ -1,0 +1,56 @@
+# 项目配置文件
+
+server:
+  #  服务器启动的端口号
+  port: 8080
+spring:
+  application:
+    #    项目的名称
+    name: fleamarket
+  #    下面的数据源配置一定要改成你自己电脑上的配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/mgallery?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+  #  配置Json序列化,不要改动
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    serialization:
+      indent_output: true
+      fail_on_empty_beans: false
+    defaultPropertyInclusion: NON_NULL
+    deserialization:
+      fail_on_unknown_properties: false
+    parser:
+      allow_unquoted_control_chars: true
+      allow_single_quotes: true
+
+mybatis:
+  #  mapper对应的xml文件存放路径
+  mapper-locations: mapper/*.xml
+
+logging:
+  level:
+    #    把日志级别设置为DEBUG,可以在控制台打印出SQL语句,方便调试
+    club.devhub.messageboard.mapper: DEBUG
+
+pagehelper:
+  #  配置分页插件
+  helperDialect: mysql
+  #  页码<=0查询第⼀页，页码>=总页数查询最后⼀页
+  reasonable: true
+  #  ⽀持通过Mapper接⼝参数来传递分页参数
+  supportMethodsArguments: true
+  params: count=countSql
+
+jwt:
+  #  jwt工具类加密用的密码
+  secret: devhub
+  #  jwt工具类设定的有效时间,以天为单位
+  expiration: 7
+
+commodity:
+  # 每个用户可以上传的物品数的最大值(不包括已经卖出的物品)
+  maxCount: 20
+
