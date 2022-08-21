@@ -1,8 +1,6 @@
 package club.devhub.fleamarket.service;
 
-import club.devhub.fleamarket.entity.Order;
-import club.devhub.fleamarket.entity.User;
-import club.devhub.fleamarket.vo.OrderVo;
+import club.devhub.fleamarket.vo.OrderVO;
 import club.devhub.fleamarket.vo.PageResult;
 
 /**
@@ -12,9 +10,18 @@ import club.devhub.fleamarket.vo.PageResult;
 */
 public interface OrderService  {
 
-    void buy(Long commodityId, Long userId);
+    /**
+     * 买家提出购买（生成订单）
+     */
+    void buy(Long commodityId, Long userId,String address);
 
+    /**
+     * 卖家确认订单（完成交易）
+     */
     void sell(Long orderId, Long userId);
 
-    PageResult<OrderVo> search(Integer category, Long userId, Integer state, Integer current, Integer pageSize);
+    /**
+     *根据指定条件返回订单的分页结果
+     */
+    PageResult<OrderVO> search(Integer category, Long userId, Integer state, Integer current, Integer pageSize);
 }

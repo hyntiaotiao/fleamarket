@@ -13,17 +13,12 @@ public class Evaluation implements Serializable {
     /**
      * 评价Id
      */
-    private Long evaluateid;
+    private Long evaluationId;
 
     /**
      * 被评价物品
      */
-    private Long commodityid;
-
-    /**
-     * 评价者Id
-     */
-    private Long userid;
+    private Long commodityId;
 
     /**
      * 评价内容
@@ -31,12 +26,12 @@ public class Evaluation implements Serializable {
     private String content;
 
     /**
-     * 
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

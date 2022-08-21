@@ -10,11 +10,23 @@ import club.devhub.fleamarket.vo.UserVO;
 */
 public interface UserService  {
 
+    /**
+     * 用户注册
+     */
     void register(String username, String password);
 
+    /**
+     * 用户登录
+     */
     User login(String username, String password);
 
+    /**
+     *更具ID获取UserVO
+     */
     UserVO getUserInfo(Long userId);
 
+    /**
+     * 修改个人信息
+     */
     void modifyInfo(Long userId, Integer sex, String address);
 }

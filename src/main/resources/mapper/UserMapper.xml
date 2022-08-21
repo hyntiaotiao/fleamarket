@@ -10,7 +10,8 @@
         <result property="password" column="passwd"/>
         <result property="address" column="address"/>
         <result property="sex" column="sex"/>
-        <result property="role" column="role"/>
+        <result property="role" column="user_role"/>
+        <result property="userStatus" column="user_status"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
@@ -42,14 +43,14 @@
         set commodities_num=commodities_num - 1
         where user_id = #{userId};
     </update>
-    <delete id="deleteUser">
-        delete
-        from t_user
-        where user_id = #{userId}
-    </delete>
+    <update id="banOffById">
+        update t_user
+        set user_status=0
+        where user_id=#{userId}
+    </update>
 
     <select id="getByUsername" resultMap="UserResultMap">
-        select user_id, username, passwd, role
+        select user_id, username, passwd, user_role,user_status
         from t_user
         where username = #{username}
     </select>
@@ -58,14 +59,14 @@
         from t_user
         where user_id = #{userId}
     </select>
-    <select id="CountById" resultType="java.lang.Integer">
+    <select id="CountCommodityById" resultType="java.lang.Integer">
         select commodities_num
         from t_user
         where user_id = #{userId}
     </select>
-    <select id="getUserById" resultType="Integer">
-        select role
+    <select id="getRoleById" resultType="Integer">
+        select user_role
         from t_user
-        where user_id=#{userID}
+        where user_id=#{userId}
     </select>
 </mapper>

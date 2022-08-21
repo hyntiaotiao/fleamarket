@@ -25,6 +25,19 @@ spring:
     parser:
       allow_unquoted_control_chars: true
       allow_single_quotes: true
+    # redis
+  redis:
+    host: 39.99.114.85
+    port: 6390
+    timeout: 1000
+    database: 0
+    password: 123456
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
 
 mybatis:
   #  mapper对应的xml文件存放路径
@@ -33,7 +46,7 @@ mybatis:
 logging:
   level:
     #    把日志级别设置为DEBUG,可以在控制台打印出SQL语句,方便调试
-    club.devhub.messageboard.mapper: DEBUG
+    club.devhub.fleamarket.mapper: DEBUG
 
 pagehelper:
   #  配置分页插件
@@ -53,4 +66,3 @@ jwt:
 commodity:
   # 每个用户可以上传的物品数的最大值(不包括已经卖出的物品)
   maxCount: 20
-

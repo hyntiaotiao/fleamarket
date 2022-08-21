@@ -1,16 +1,13 @@
 package club.devhub.fleamarket.controller;
 
 import club.devhub.fleamarket.annotation.Idempotent;
-import club.devhub.fleamarket.entity.Commodity;
 import club.devhub.fleamarket.entity.User;
-import club.devhub.fleamarket.mapper.CommodityMapper;
 import club.devhub.fleamarket.param.CommodityParam;
 import club.devhub.fleamarket.param.PagingParam;
 import club.devhub.fleamarket.param.ReportCommodityParam;
 import club.devhub.fleamarket.param.SearchCommodityParam;
 import club.devhub.fleamarket.service.CommodityService;
-import club.devhub.fleamarket.service.UserService;
-import club.devhub.fleamarket.vo.CommodityVo;
+import club.devhub.fleamarket.vo.CommodityVO;
 import club.devhub.fleamarket.vo.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,15 +62,15 @@ public class CommodityController {
     /**
     *获取物品详细信息*/
     @GetMapping("{commodityId}")
-    public CommodityVo search(@PathVariable Long commodityId){
+    public CommodityVO search(@PathVariable Long commodityId){
         return commodityService.getCommodityDetails(commodityId);
     }
 
     /**
      *获取物品分页列表*/
     @GetMapping
-    public PageResult<CommodityVo> getPageResult(@Valid SearchCommodityParam searchCommodityParam, @Valid PagingParam pagingParam){
-        PageResult<CommodityVo> pageResult=commodityService.search(
+    public PageResult<CommodityVO> getPageResult(@Valid SearchCommodityParam searchCommodityParam, @Valid PagingParam pagingParam){
+        PageResult<CommodityVO> pageResult=commodityService.search(
                 searchCommodityParam.getCategory(),
                 searchCommodityParam.getUserId(),
                 searchCommodityParam.getSold(),

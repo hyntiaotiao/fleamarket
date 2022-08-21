@@ -27,8 +27,9 @@ public class Commodity implements Serializable {
 
     /**
      * 价格
+     * （金额在实体类中表示应该用Long，以“分”为单位，数据库对应类型为bigint）
      */
-    private Integer price;
+    private Long price;
 
     /**
      * 物品的详细说明

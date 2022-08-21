@@ -9,18 +9,17 @@ import lombok.Data;
  * @TableName t_reports
  */
 @Data
-public class Reports implements Serializable {
+public class Report implements Serializable {
     /**
      * 举报Id
 
      */
-    private Long reportid;
+    private Long reportId;
 
     /**
      * 被举报物品Id
-
      */
-    private Long commodityid;
+    private Long commodityId;
 
     /**
      * 举报理由
@@ -28,12 +27,12 @@ public class Reports implements Serializable {
     private String reason;
 
     /**
-     * 
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

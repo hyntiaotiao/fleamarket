@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class Order implements Serializable {
     /**
-     * 
+     * 订单ID
      */
     private Long orderId;
 
@@ -31,12 +31,12 @@ public class Order implements Serializable {
     private Integer state;
 
     /**
-     * 
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

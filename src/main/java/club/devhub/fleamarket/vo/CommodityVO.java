@@ -3,7 +3,7 @@ package club.devhub.fleamarket.vo;
 import lombok.Data;
 
 @Data
-public class CommodityVo {
+public class CommodityVO {
     private String commodityName;
     private Integer category;
     private Long userId;

@@ -49,6 +49,11 @@ public class User implements Serializable,UserDetails {
     private Integer role;
 
     /**
+     * 用户状态
+     * */
+    private Integer userStatus;
+
+    /**
      * 更新时间
      */
 

@@ -4,7 +4,7 @@ package club.devhub.fleamarket.vo;
 import lombok.Data;
 
 @Data
-public class OrderVo {
+public class OrderVO {
     private Long orderId;
     private String commodityName;
     private Integer commodityId;

@@ -1,13 +1,11 @@
 package club.devhub.fleamarket.service.impl;
 
 import club.devhub.fleamarket.constant.ResultCodeEnum;
-import club.devhub.fleamarket.entity.Commodity;
 import club.devhub.fleamarket.entity.Evaluation;
 import club.devhub.fleamarket.entity.Order;
 import club.devhub.fleamarket.exception.BusinessException;
 import club.devhub.fleamarket.exception.IllegalOperationException;
 import club.devhub.fleamarket.exception.NotFoundException;
-import club.devhub.fleamarket.mapper.CommodityMapper;
 import club.devhub.fleamarket.mapper.OrderMapper;
 import club.devhub.fleamarket.service.EvaluationService;
 import club.devhub.fleamarket.mapper.EvaluationMapper;
@@ -29,9 +27,6 @@ public class EvaluationServiceImpl implements EvaluationService{
     private EvaluationMapper evaluationMapper;
 
     @Autowired
-    private CommodityMapper commodityMapper;
-
-    @Autowired
     private OrderMapper orderMapper;
 
     /**
@@ -41,15 +36,15 @@ public class EvaluationServiceImpl implements EvaluationService{
     @Override
     public void evaluate(Long userId, Long orderId, String evaluation) {
         Order order = orderMapper.getOrderById(orderId);
-        if(order==null){
+        if(order.equals(null)){
             throw new NotFoundException("物品id错误或不存在");
         }
-        if(order.getBuyerId()!=userId){
+        if(!order.getBuyerId().equals(userId)){
             throw new IllegalOperationException("用户尝试评价不属于自己购买的物品");
         }
         Long commodityId=order.getCommodityId();
         try {
-            evaluationMapper.insert(commodityId, userId,evaluation);
+            evaluationMapper.insert(commodityId,evaluation);
         } catch (DuplicateKeyException e) {
             log.info("userId为{}的用户重复评价orderId为{}的订单（物品）", userId, orderId);
             throw new BusinessException(ResultCodeEnum.REPEAT_OPERATION);
@@ -63,16 +58,16 @@ public class EvaluationServiceImpl implements EvaluationService{
     @Override
     public void edit(Long userId, Long orderId, String evaluation) {
         Order order = orderMapper.getOrderById(orderId);
-        if(order==null){
+        if(order.equals(null)){
             throw new NotFoundException("物品id错误或不存在");
         }
-        if(order.getBuyerId()!=userId){
+        if(!order.getBuyerId().equals(userId)){
             throw new IllegalOperationException("用户尝试评价不属于自己购买的物品");
         }
         Long commodityId=order.getCommodityId();
         try {
             evaluationMapper.update(commodityId, userId,evaluation);
-        } catch (DuplicateKeyException e) {
+        } catch (BusinessException e) {
             log.info("userId为{}的用户重复评价orderId为{}的订单（物品）", userId, orderId);
             throw new BusinessException(ResultCodeEnum.REPEAT_OPERATION);
         }
@@ -83,17 +78,15 @@ public class EvaluationServiceImpl implements EvaluationService{
      * 2、检查commodity是不是userId购买的
      * 3、删除评论*/
     @Override
-    public void delete(Long userId, Long evaluateId) {
-        Evaluation evaluation=evaluationMapper.getEvaluationById(evaluateId);
-        System.out.println(evaluateId);
-        System.out.println(evaluation);
-        if(evaluation==null){
+    public void delete(Long userId, Long evaluationId) {
+        Evaluation evaluation=evaluationMapper.getEvaluationById(evaluationId);
+        if(evaluation.equals(null)){
             throw new NotFoundException("评价id错误或不存在");
         }
-        if(evaluation.getUserid()!=userId){
+        if(!evaluationMapper.getUserIdById(evaluationId).equals(userId)){
             throw new IllegalOperationException("用户尝试删除不属于自己发出的评价");
         }
-        evaluationMapper.delete(evaluateId);
+        evaluationMapper.delete(evaluationId);
 
     }
 }

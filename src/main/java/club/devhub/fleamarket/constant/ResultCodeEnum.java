@@ -26,7 +26,18 @@ public enum ResultCodeEnum {
     /**
      * 当前用户发布的物品数量已经上限
      */
-    MAXIMUM_NUMBER_COMMODITIES(1005,"当前用户发布的物品数量已经上限");
+    MAXIMUM_NUMBER_COMMODITIES(1005,"当前用户发布的物品数量已经上限"),
+
+    /**
+     * 该账号已经被封禁
+     */
+    ACCOUNT_IS_BLOCKED(1006,"该账号已经被封禁"),
+
+    /**
+     * 服务器繁忙
+     */
+    THE_SERVER_IS_BUSY(1007,"服务器繁忙");
+
 
 
     private final int code;

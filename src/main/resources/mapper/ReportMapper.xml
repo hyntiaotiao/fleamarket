@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.devhub.fleamarket.mapper.ReportsMapper">
+
+    <resultMap id="ReportVOResultMap" type="club.devhub.fleamarket.vo.ReportVO">
+        <id property="reportId" column="report_id"/>
+        <result property="commodityId" column="commodity_id"/>
+        <result property="userId" column="tr_uid"/>
+        <result property="reportedId" column="tc_uid"/>
+        <result property="reason" column="reason"/>
+        <result property="message" column="message"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="ReportResultMap" type="club.devhub.fleamarket.entity.Report">
+        <id property="reportId" column="report_id"/>
+        <result property="commodityId" column="commodity_id"/>
+        <result property="userId" column="tr_uid"/>
+        <result property="reportId" column="tc_uid"/>
+        <result property="reason" column="reason"/>
+        <result property="auditState" column="audit_state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into t_report(commodity_id, user_id, reason)
+        values (#{commodityId}, #{userId}, #{reason})
+    </insert>
+    <update id="setStateToAudited">
+        update t_report
+        set audit_state=1
+        where report_id = #{reportId}
+    </update>
+
+    <select id="getList" resultMap="ReportVOResultMap">
+        select tr.report_id,
+               tr.commodity_id,
+               tr.user_id tr_uid,
+               tc.user_id tc_uid,
+               tr.reason,
+               tc.message,
+               tr.create_time
+        from t_report as tr
+                 left join t_commodity as tc
+                           on tr.commodity_id = tc.commodity_id
+        where audit_state = 0
+        order by report_id desc
+    </select>
+    <select id="getReportById" resultMap="ReportResultMap">
+        select *
+        from t_report
+        where report_id = #{reportId}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from t_report
+        where commodity_id = #{commodityId}
+          and user_id = #{userId}
+    </select>
+</mapper>

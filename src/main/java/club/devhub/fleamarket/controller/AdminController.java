@@ -11,10 +11,9 @@ import club.devhub.fleamarket.service.ReportsService;
 import club.devhub.fleamarket.service.UserService;
 import club.devhub.fleamarket.utils.JwtUtil;
 import club.devhub.fleamarket.vo.PageResult;
-import club.devhub.fleamarket.vo.ReportVo;
+import club.devhub.fleamarket.vo.ReportVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -49,19 +48,20 @@ public class AdminController {
 
     @GetMapping("/reports")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public PageResult<ReportVo> getReportList(@Valid PagingParam pagingParam) {
+    public PageResult<ReportVO> getReportList(@Valid PagingParam pagingParam) {
         return reportsService.getList(pagingParam.getCurrent(), pagingParam.getPageSize());
     }
 
 
     @PutMapping("/{reportId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void review(@PathVariable Long reportId) {
-        reportsService.review(reportId);
+    public void review(@PathVariable Long reportId,int isIllegal) {
+        reportsService.review(reportId,isIllegal);
     }
+
     @DeleteMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public void logOff(Long userId) {
-        reportsService.logOff(userId);
+    public void banOff(Long userId) {
+        reportsService.banOff(userId);
     }
 }

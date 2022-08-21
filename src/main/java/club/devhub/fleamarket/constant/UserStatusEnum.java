@@ -3,22 +3,19 @@ package club.devhub.fleamarket.constant;
 /**
  * 用户的性别
  */
-public enum UserSexEnum {
+public enum UserStatusEnum {
+
     /**
-     * 未知
+     * 未封禁
      */
-    UNKNOWN(0),
+    NOT_BAN(1),
     /**
-     * 男
+     * 封禁
      */
-    MALE(1),
-    /**
-     * 女
-     */
-    FEMALE(2);
+    BANNED(0);
     private final int code;
 
-    UserSexEnum(int code) {
+    UserStatusEnum(int code) {
         this.code = code;
     }
 

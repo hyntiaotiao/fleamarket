@@ -9,9 +9,18 @@ import club.devhub.fleamarket.entity.Evaluation;
 */
 public interface EvaluationService {
 
+    /**
+     * 评价某次交易（订单）
+     */
     void evaluate(Long userId, Long orderId, String evaluation);
 
+    /**
+     * 编辑评价
+     */
     void edit(Long userId, Long orderId, String evaluation);
 
+    /**
+     * 删除自己（评价者）的某个评价
+     */
     void delete(Long userId, Long evaluateId);
 }

@@ -25,8 +25,6 @@ public interface UserMapper{
      * */
     int updateById(@Param("userId")Long userId, @Param("sex")Integer sex, @Param("address") String address);
 
-    int CountById(@Param("userId") Long userId);
-
     /**
      * commoditi_num字段减一
      * */
@@ -36,9 +34,12 @@ public interface UserMapper{
      * */
     int decreaseCommoditiesNum(@Param("userId")Long userId);
 
-    int deleteUser(@Param("userId") Long userId);
+    int banOffById(@Param("userId") Long userId);
 
-    Integer getUserById(@Param("userID") Long userId);
+    Integer getRoleById(@Param("userId") Long userId);
+
+    int CountCommodityById(@Param("userId") Long userId);
+
 }
 
 

@@ -5,13 +5,14 @@ import club.devhub.fleamarket.constant.ResultCodeEnum;
 import club.devhub.fleamarket.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 这是一个Interceptor（拦截器），我们可以用拦截器保证请求的幂等性
@@ -33,7 +34,7 @@ public class IdempotentInterceptor implements HandlerInterceptor {
      * 现在先凑活用吧，重点是理解这种思想，今后改用Redis实现缓存
      */
     @Autowired
-    private ConcurrentHashMap<String, String> cache;
+    private RedisTemplate redisTemplate;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -43,9 +44,12 @@ public class IdempotentInterceptor implements HandlerInterceptor {
             String key = request.getHeader("requestId");
             //putIfAbsent方法：如果缓存中没有这个key返回的是null，如果缓存中已经有这个key，返回的是旧值
             //如果putIfAbsent返回的不是null，说明这是重复请求，进行拦截
-            if (key == null || cache.putIfAbsent("MessageBoard:" + key, "处理中") != null) {
+            if (key == null || redisTemplate.opsForValue().get(key)!=null) {
                 log.info("[拦截器前置处理]\n无法保证幂等，携带的requestId为" + key);
+                redisTemplate.opsForValue().set(key,"1",3, TimeUnit.SECONDS);
                 throw new BusinessException(ResultCodeEnum.REPEAT_OPERATION);
+            }else if(key!=null&&redisTemplate.opsForValue().get(key)==null){
+                redisTemplate.opsForValue().set(key,"1",10, TimeUnit.SECONDS);
             }
             log.info("[拦截器前置处理]\n幂等校验通过，进行放行。");
         } else {

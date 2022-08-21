@@ -1,10 +1,10 @@
 package club.devhub.fleamarket.service.impl;
 
 import club.devhub.fleamarket.constant.ResultCodeEnum;
+import club.devhub.fleamarket.constant.UserStatusEnum;
 import club.devhub.fleamarket.entity.User;
 import club.devhub.fleamarket.exception.BusinessException;
 import club.devhub.fleamarket.exception.NotFoundException;
-import club.devhub.fleamarket.mapper.CommodityMapper;
 import club.devhub.fleamarket.service.UserService;
 import club.devhub.fleamarket.mapper.UserMapper;
 import club.devhub.fleamarket.vo.UserVO;
@@ -29,8 +29,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private CommodityMapper commodityMapper;
 
     /**
      * PasswordEncoder用于用户注册，把用户密码加密后，也即是passwordEncoder.encode()之后，
@@ -62,6 +60,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String username, String password) {
+        User user=userMapper.getByUsername(username);
+        if(user.getUserStatus().equals(UserStatusEnum.BANNED.getCode())){
+            log.warn("[登录失败]  尝试登录失败，失败原因：账号已经被封禁");
+            throw new BusinessException(ResultCodeEnum.ACCOUNT_IS_BLOCKED);
+        }
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -75,6 +78,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO getUserInfo(Long userId) {
         UserVO userVo=userMapper.getVOById(userId);
+        if(userVo.equals(null)){
+            throw new NotFoundException("用户不存在");
+        }
         return userVo;
     }
 

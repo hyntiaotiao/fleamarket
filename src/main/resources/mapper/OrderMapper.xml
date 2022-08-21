@@ -5,20 +5,20 @@
 <mapper namespace="club.devhub.fleamarket.mapper.OrderMapper">
 
     <resultMap id="OrderResultMap" type="club.devhub.fleamarket.entity.Order">
-        <id property="orderId" column="orderId"/>
-        <result property="buyerId" column="buyerId"/>
-        <result property="commodityId" column="commodityId"/>
+        <id property="orderId" column="order_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="commodityId" column="commodity_id"/>
         <result property="state" column="state"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <resultMap id="OrderVoResultMap" type="club.devhub.fleamarket.vo.OrderVo">
-        <id property="orderId" column="orderId"/>
-        <result property="buyerId" column="buyerId"/>
+    <resultMap id="OrderVoResultMap" type="club.devhub.fleamarket.vo.OrderVO">
+        <id property="orderId" column="order_id"/>
+        <result property="buyerId" column="buyer_id"/>
         <result property="sellerId" column="user_id"/>
         <result property="commodityName" column="commodity_name"/>
-        <result property="commodityId" column="commodityId"/>
+        <result property="commodityId" column="commodity_id"/>
         <result property="category" column="category"/>
         <result property="price" column="price"/>
         <result property="state" column="state"/>
@@ -27,24 +27,24 @@
     </resultMap>
 
     <insert id="insert">
-        insert into t_order(buyerId, commodityId)
-        values (#{userId}, #{commodityId})
+        insert into t_order(buyer_id, commodity_id,address)
+        values (#{userId}, #{commodityId},#{address})
     </insert>
-    <update id="changeState">
+    <update id="setStateToCompleted">
         update t_order
         set state = 1
-        where orderId = #{orderId}
+        where order_id = #{orderId}
     </update>
     <select id="getOrderById" resultMap="OrderResultMap">
         select *
         from t_order
-        where orderId = #{orderId}
+        where order_id = #{orderId}
     </select>
     <select id="getList" resultMap="OrderVoResultMap">
         select
-        tor.orderId,tc.commodity_name,tc.category,tc.user_id,tc.price,tor.state,tor.buyerId,tor.create_time,tor.update_time
+        tor.order_id,tc.commodity_name,tc.category,tc.user_id,tc.price,tor.state,tor.buyer_id,tor.create_time,tor.update_time
         from t_order as tor
-        left join t_commodity as tc on tc.commodityId = tor.commodityId
+        left join t_commodity as tc on tc.commodity_id = tor.commodity_id
         <where>
             <if test="category != null">
                 tc.category = #{category}
@@ -52,9 +52,9 @@
             <if test="state != null">
                 and tor.state =#{state}
             </if>
-            and (tor.buyerId =#{userId} or tc.user_id=#{userId})
+            and (tor.buyer_id =#{userId} or tc.user_id=#{userId})
         </where>
-        order by orderId desc
+        order by order_id desc
     </select>
 
 </mapper>

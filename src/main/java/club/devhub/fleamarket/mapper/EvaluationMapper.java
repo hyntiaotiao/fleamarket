@@ -14,13 +14,15 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface EvaluationMapper  {
 
-    void insert(@Param("commodityId") Long commodityId, @Param("userId") Long userId, @Param("evaluation") String evaluation);
+    void insert(@Param("commodityId") Long commodityId, @Param("evaluation") String evaluation);
 
     void update(@Param("commodityId") Long commodityId, @Param("userId") Long userId, @Param("evaluation") String evaluation);
 
     Evaluation getEvaluationById(@Param("evaluateId") Long evaluateId);
 
     int delete(@Param("evaluateId") Long evaluateId);
+
+    Long getUserIdById(@Param("evaluationId") Long evaluationId);
 }
 
 

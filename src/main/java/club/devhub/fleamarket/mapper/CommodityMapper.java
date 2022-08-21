@@ -1,7 +1,7 @@
 package club.devhub.fleamarket.mapper;
 
 import club.devhub.fleamarket.entity.Commodity;
-import club.devhub.fleamarket.vo.CommodityVo;
+import club.devhub.fleamarket.vo.CommodityVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,9 +33,9 @@ public interface CommodityMapper  {
 
     int deleteById(@Param("commodityId") Long commodityId);
 
-    CommodityVo getCommodityVoById(@Param("commodityId") Long commodityId);
+    CommodityVO getCommodityVoById(@Param("commodityId") Long commodityId);
 
-    List<CommodityVo> getList(@Param("category") Integer category, @Param("userId") String userId, @Param("sold") Integer sold);
+    List<CommodityVO> getList(@Param("category") Integer category, @Param("userId") Long userId, @Param("sold") Integer sold);
 
     void changeSold(@Param("commodiyuId") Long commodityId);
 }

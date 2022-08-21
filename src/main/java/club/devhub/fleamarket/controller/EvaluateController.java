@@ -28,7 +28,6 @@ public class EvaluateController {
 
     @PutMapping("/{orderId}")
     @PreAuthorize("hasAnyRole('USER')")
-    @Idempotent
     public void edit(@PathVariable Long orderId, @RequestBody @Valid EvaluateParam evaluateParam, @AuthenticationPrincipal User user){
         evaluationService.edit(user.getUserId(),orderId,evaluateParam.getEvaluation());
     }

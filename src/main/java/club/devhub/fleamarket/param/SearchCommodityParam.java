@@ -14,7 +14,8 @@ public class SearchCommodityParam {
      * 用户Id
      * 默认值null，表示没有按照userId筛选
      */
-   private String userId;
+    @Min(1)
+    private Long userId;
     /**
      * 物品类别
      */

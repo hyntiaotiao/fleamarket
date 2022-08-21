@@ -1,7 +1,6 @@
 package club.devhub.fleamarket.service;
 
-import club.devhub.fleamarket.entity.Commodity;
-import club.devhub.fleamarket.vo.CommodityVo;
+import club.devhub.fleamarket.vo.CommodityVO;
 import club.devhub.fleamarket.vo.PageResult;
 
 /**
@@ -11,15 +10,33 @@ import club.devhub.fleamarket.vo.PageResult;
 */
 public interface CommodityService  {
 
+    /**
+     * 发布物品
+     */
     void publish(String commodityName, Integer category, Integer price, String message, Long userId);
 
+    /**
+     * 编辑物品
+     */
     void edit(Long userId, Long commodityId, String commodityName, Integer category, Integer price, String message);
 
+    /**
+     * 用户删除自己的某个物品
+     */
     void delete(Long commodityId, Long userId);
 
-    CommodityVo getCommodityDetails(Long commodityId);
+    /**
+     * 根据id获取CommodityVO
+     */
+    CommodityVO getCommodityDetails(Long commodityId);
 
-    PageResult<CommodityVo> search(Integer category, String userId, Integer sold, Integer current, Integer pageSize);
+    /**
+     * 根据指定条件获取分页结果
+     */
+    PageResult<CommodityVO> search(Integer category, Long userId, Integer sold, Integer current, Integer pageSize);
 
+    /**
+     * 举报某物品
+     */
     void report(Long userId, Long commodityId, String reason);
 }

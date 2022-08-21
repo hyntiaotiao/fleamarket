@@ -1,8 +1,8 @@
 package club.devhub.fleamarket.mapper;
 
 import club.devhub.fleamarket.entity.Commodity;
-import club.devhub.fleamarket.entity.Reports;
-import club.devhub.fleamarket.vo.ReportVo;
+import club.devhub.fleamarket.entity.Report;
+import club.devhub.fleamarket.vo.ReportVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,13 +18,15 @@ import java.util.List;
 @Mapper
 public interface ReportsMapper  {
 
-    int count(@Param("commodity") Commodity commodity, @Param("userId") Long userId);
-
     void insert(@Param("commodityId") Long commodityId, @Param("userId") Long userId, @Param("reason") String reason);
 
-    List<ReportVo> getList();
+    List<ReportVO> getList();
 
-    int changeState(@Param("reportId") Long reportId);
+    int setStateToAudited(@Param("reportId") Long reportId);
+
+    Report getReportById(@Param("reportId") Long reportId);
+
+    int count(@Param("commodityId") Long commodityId, @Param("userId") Long userId);
 }
 
 

@@ -9,7 +9,8 @@ import club.devhub.fleamarket.mapper.ReportsMapper;
 import club.devhub.fleamarket.mapper.UserMapper;
 import club.devhub.fleamarket.service.CommodityService;
 import club.devhub.fleamarket.mapper.CommodityMapper;
-import club.devhub.fleamarket.vo.CommodityVo;
+import club.devhub.fleamarket.utils.RedisLock;
+import club.devhub.fleamarket.vo.CommodityVO;
 import club.devhub.fleamarket.vo.PageResult;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -17,7 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,21 +43,39 @@ public class CommodityServiceImpl implements CommodityService{
     private UserMapper userMapper;
 
     @Autowired
-    private ReportsMapper reportsMapper;
+    private ReportsMapper reportMapper;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     /**
+     * 这里添加了基于redis的分布式锁：
+     *  对用户的物品数量进行上锁（锁名为"publish:"+userId）
      * 1、判断用户发布的物品数量是否小于最大值
      * 2、插入物品信息；用户发布的物品数量加一
      */
+    @Transactional
     @Override
     public void publish(String commodityName, Integer category, Integer price, String message, Long userId) {
-        int count=userMapper.CountById(userId);
-        System.out.println(count);
-        if(count<maxCount){
-            commodityMapper.insert(commodityName,category,price,message,userId);
-            userMapper.increaseCommoditiesNum(userId);
-        }else{
-            throw new BusinessException(ResultCodeEnum.MAXIMUM_NUMBER_COMMODITIES,"当前用户发布的物品数量已经上限");
+        RedisLock redisLock=new RedisLock("publish_"+userId,stringRedisTemplate);
+        boolean isLock=redisLock.tryLock(10);
+        try{
+            if(isLock){
+                int count=userMapper.CountCommodityById(userId);
+                log.info("count:"+count);
+                if(count<maxCount){
+                    commodityMapper.insert(commodityName,category,price,message,userId);
+                    userMapper.increaseCommoditiesNum(userId);
+                }else{
+                    throw new BusinessException(ResultCodeEnum.MAXIMUM_NUMBER_COMMODITIES,"当前用户发布的物品数量已经上限");
+                }
+            }else{
+                log.info("互斥锁 \"publish_\"+userId 已存在");
+                throw new BusinessException(ResultCodeEnum.THE_SERVER_IS_BUSY,"服务器繁忙，请稍后重试");
+            }
+        }finally {
+            //释放锁
+            redisLock.unLock();
         }
     }
 
@@ -66,11 +87,11 @@ public class CommodityServiceImpl implements CommodityService{
     @Override
     public void edit(Long userId, Long commodityId, String commodityName, Integer category, Integer price, String message) {
          Commodity commodity = commodityMapper.getCommodityById(commodityId);
-         if(commodity==null){
+         if(commodity.equals(null)){
              throw new NotFoundException("物品id错误或不存在");
          }
          Long id=commodity.getUserId();
-         if(id!=userId){
+         if(!id.equals(userId)){
              throw new IllegalOperationException("用户尝试更新不属于它的物品的信息");
          }
          commodityMapper.update(commodityId,commodityName,category,price,message);
@@ -82,17 +103,30 @@ public class CommodityServiceImpl implements CommodityService{
      * 4、user中的commodi_num字段减一
      */
     @Override
+    @Transactional
     public void delete(Long commodityId, Long userId) {
-        Commodity commodity = commodityMapper.getCommodityById(commodityId);
-        if(commodity==null){
-            throw new NotFoundException("物品id错误或不存在");
+        RedisLock redisLock=new RedisLock("delete_"+userId,stringRedisTemplate);
+        boolean isLock=redisLock.tryLock(10);
+        try{
+            if(isLock){
+                Commodity commodity = commodityMapper.getCommodityById(commodityId);
+                if(commodity.equals(null)){
+                    throw new NotFoundException("物品id错误或不存在");
+                }
+                Long id=commodity.getUserId();
+                if(!id.equals(userId)){
+                    throw new IllegalOperationException("用户尝试删除不属于它的物品的信息");
+                }
+                commodityMapper.deleteById(commodityId);
+                userMapper.decreaseCommoditiesNum(userId);
+            }else{
+                log.info("互斥锁 \"delete_\"+userId 已存在");
+                throw new BusinessException(ResultCodeEnum.THE_SERVER_IS_BUSY,"服务器繁忙，请稍后重试");
+            }
+        }finally {
+            //释放锁
+            redisLock.unLock();
         }
-        Long id=commodity.getUserId();
-        if(id!=userId){
-            throw new IllegalOperationException("用户尝试删除不属于它的物品的信息");
-        }
-        commodityMapper.deleteById(commodityId);
-        userMapper.decreaseCommoditiesNum(userId);
     }
 
     /**
@@ -100,9 +134,9 @@ public class CommodityServiceImpl implements CommodityService{
      * 2、返回commodityVo
      */
     @Override
-    public CommodityVo getCommodityDetails(Long commodityId) {
-        CommodityVo commodityVo = commodityMapper.getCommodityVoById(commodityId);
-        if(commodityVo==null){
+    public CommodityVO getCommodityDetails(Long commodityId) {
+        CommodityVO commodityVo = commodityMapper.getCommodityVoById(commodityId);
+        if(commodityVo.equals(null)){
             throw new NotFoundException("物品id错误或不存在");
         }
         return commodityVo;
@@ -112,15 +146,15 @@ public class CommodityServiceImpl implements CommodityService{
      * pagehelper是mybatis 提供的分页插件,可以很方便的获取很多分页参数
      * */
     @Override
-    public PageResult<CommodityVo> search(Integer category, String userId, Integer sold, Integer current, Integer pageSize) {
+    public PageResult<CommodityVO> search(Integer category, Long userId, Integer sold, Integer current, Integer pageSize) {
         //设定起始页
         PageHelper.startPage(current, pageSize);
         //查询数据
-        List<CommodityVo> list = commodityMapper.getList(category, userId,sold);
-        PageInfo<CommodityVo> pageInfo = new PageInfo<>(list);
+        List<CommodityVO> list = commodityMapper.getList(category, userId,sold);
+        PageInfo<CommodityVO> pageInfo = new PageInfo<>(list);
 
         //根据pageInfo获取PageResult所需数据
-        PageResult<CommodityVo> result = new PageResult<>();
+        PageResult<CommodityVO> result = new PageResult<>();
         result.setTotal(pageInfo.getTotal());
         result.setPrev(pageInfo.isHasPreviousPage() ? pageInfo.getPrePage() : -1);
         result.setNext(pageInfo.isHasNextPage() ? pageInfo.getNextPage() : -1);
@@ -138,19 +172,19 @@ public class CommodityServiceImpl implements CommodityService{
     @Override
     public void report(Long userId, Long commodityId, String reason) {
         Commodity commodity = commodityMapper.getCommodityById(commodityId);
-        if(commodity==null){
+        if(commodity.equals(null)){
             throw new NotFoundException("物品id错误或不存在");
         }
-        if(userId==commodity.getUserId()){
+        if(userId.equals(commodity.getUserId())){
             throw new IllegalOperationException("用户尝试举报自己上传的物品");
         }
-        /*int count = reportsMapper.count(commodity, userId);
+        int count = reportMapper.count(commodityId, userId);
         if (count > 0) {
             log.info("userId为{}的用户重复举报messageId为{}的留言", userId, commodity);
             throw new BusinessException(ResultCodeEnum.REPEAT_OPERATION);
-        }*/
+        }
         try {
-            reportsMapper.insert(commodityId, userId,reason);
+            reportMapper.insert(commodityId, userId,reason);
         } catch (DuplicateKeyException e) {
             log.info("userId为{}的用户重复举报commodityId为{}的留言", userId, commodity);
             throw new BusinessException(ResultCodeEnum.REPEAT_OPERATION);

@@ -1,8 +1,7 @@
 package club.devhub.fleamarket.service;
 
-import club.devhub.fleamarket.entity.Reports;
 import club.devhub.fleamarket.vo.PageResult;
-import club.devhub.fleamarket.vo.ReportVo;
+import club.devhub.fleamarket.vo.ReportVO;
 
 
 /**
@@ -12,9 +11,15 @@ import club.devhub.fleamarket.vo.ReportVo;
 */
 public interface ReportsService  {
 
-    PageResult<ReportVo> getList(Integer current, Integer pageSize);
+    PageResult<ReportVO> getList(Integer current, Integer pageSize);
 
-    void review(Long reportId);
+    /**
+     * 评审某次举报
+     */
+    void review(Long reportId,int isIlleagl);
 
-    void logOff(Long userId);
+    /**
+     * 对违规用户进行封号
+     */
+    void banOff(Long userId);
 }

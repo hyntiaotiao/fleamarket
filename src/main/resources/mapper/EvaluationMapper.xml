@@ -5,32 +5,36 @@
 <mapper namespace="club.devhub.fleamarket.mapper.EvaluationMapper">
 
     <resultMap id="EvaluationResultMap" type="club.devhub.fleamarket.entity.Evaluation">
-        <result property="evaluateid" column="evaluateId"/>
-        <result property="commodityid" column="commodityId"/>
-        <result property="userid" column="userId"/>
+        <result property="evaluationId" column="evaluation_id"/>
+        <result property="commodityId" column="commodity_id"/>
         <result property="content" column="content"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <insert id="insert">
-        insert into t_evaluation (commodityId, userId, content)
-        values (#{commodityId}, #{userId}, #{evaluation})
+        insert into t_evaluation (commodity_id, content)
+        values (#{commodityId}, #{evaluation})
     </insert>
     <update id="update">
         update t_evaluation
         set content=#{evaluation}
-        where userId = #{userId}
-          and commodityId = #{commodityId}
+        where  commodity_id = #{commodityId}
     </update>
     <delete id="delete">
         delete
         from t_evaluation
-        where evaluateId=#{evaluateId}
+        where evaluation_id=#{evaluateId}
     </delete>
     <select id="getEvaluationById" resultMap="EvaluationResultMap">
         select *
         from t_evaluation
-        where evaluateId = #{evaluateId}
+        where evaluation_id = #{evaluateId}
+    </select>
+    <select id="getUserIdById" resultType="java.lang.Long">
+        select user_id
+        from t_evaluation left join t_commodity
+         on t_evaluation.commodity_id=t_commodity.t_commodity_id
+        where evaluation_id=#{evaluationId}
     </select>
 </mapper>

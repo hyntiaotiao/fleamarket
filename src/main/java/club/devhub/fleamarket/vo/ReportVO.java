@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportVo {
+public class ReportVO {
     /**
      * 举报Id
      * */

@@ -5,7 +5,7 @@
 <mapper namespace="club.devhub.fleamarket.mapper.CommodityMapper">
 
     <resultMap id="CommodityResultMap" type="club.devhub.fleamarket.entity.Commodity">
-        <id property="commodityId" column="commodityId"/>
+        <id property="commodityId" column="commodity_id"/>
         <result property="commodityName" column="commodity_name"/>
         <result property="category" column="category"/>
         <result property="price" column="price"/>
@@ -16,7 +16,7 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <resultMap id="CommodityVoResultMap" type="club.devhub.fleamarket.vo.CommodityVo">
+    <resultMap id="CommodityVoResultMap" type="club.devhub.fleamarket.vo.CommodityVO">
         <result property="commodityName" column="commodity_name"/>
         <result property="category" column="category"/>
         <result property="price" column="price"/>
@@ -36,26 +36,26 @@
             category=#{category},
             price=#{price},
             message=#{message}
-        where commodityId=#{commodityId}
+        where commodity_id=#{commodityId}
     </update>
     <update id="changeSold">
         update t_commodity
         set sold = 1
-        where commodityId=#{commodiyuId}
+        where commodity_id=#{commodiyuId}
     </update>
     <delete id="deleteById">
-        delete from t_commodity where commodityId = #{commodityId}
+        delete from t_commodity where commodity_id = #{commodityId}
     </delete>
     <select id="getCommodityById" resultMap="CommodityResultMap">
         select *
         from t_commodity
-        where commodityId=#{commmodityId}
+        where commodity_id=#{commmodityId}
     </select>
 
     <select id="getCommodityVoById" resultMap="CommodityVoResultMap">
-        select *
+        select commodity_name,category,price,message,sold,user_id,create_time
         from t_commodity
-        where commodityId=#{commodityId}
+        where commodity_id=#{commodityId}
     </select>
     <select id="getList"  resultMap="CommodityVoResultMap">
         select commodity_name,category,user_id,price,message,sold,create_time
@@ -71,6 +71,6 @@
                 and sold =#{sold}
             </if>
         </where>
-        order by commodityId desc
+        order by commodity_id desc
     </select>
 </mapper>

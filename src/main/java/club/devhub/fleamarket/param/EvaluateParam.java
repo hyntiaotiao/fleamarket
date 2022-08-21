@@ -7,6 +7,10 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class EvaluateParam {
+
+    /**
+     * 评价内容
+     */
     @NotBlank(message = "评价不能为空")
     @Length(max = 255,message = "评价内容最大长度为255")
     private String evaluation;
