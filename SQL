@@ -1,0 +1,77 @@
+create table t_commodity
+(
+    commodity_id   bigint auto_increment comment '物品ID'
+        primary key,
+    commodity_name varchar(20)                                not null comment '物品名称',
+    category       tinyint unsigned                           not null comment '物品种类',
+    price          bigint                                     not null comment '价格',
+    message        varchar(255)                               not null comment '物品的详细说明',
+    sold           tinyint unsigned default 0                 not null comment '是否已经卖出（默认没有卖出）',
+    user_id        bigint                                     not null comment '物品主人的ID',
+    update_time    datetime         default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    create_time    datetime         default CURRENT_TIMESTAMP not null comment '创建时间'
+)
+    comment '物品表';
+
+create table t_evaluation
+(
+    evaluation_id bigint auto_increment comment '评价Id'
+        primary key,
+    commodity_id  bigint                             not null comment '被评价物品',
+    content       varchar(255)                       not null comment '评价内容',
+    create_time   datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time   datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint t_evaluation_commodity_id_uindex
+        unique (commodity_id)
+)
+    comment '评价表';
+
+create table t_order
+(
+    order_id     bigint auto_increment comment '订单id'
+        primary key,
+    buyer_id     bigint                                     not null comment '买方ID',
+    commodity_id bigint                                     not null comment '物品Id',
+    state        tinyint unsigned default 0                 not null comment '订单状态',
+    address      varchar(255)                               not null comment '买家地址',
+    create_time  datetime         default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time  datetime         default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint t_order_commodityId_buyerId_uindex
+        unique (commodity_id, buyer_id)
+)
+    comment '订单表';
+
+create table t_report
+(
+    report_id    bigint auto_increment comment '举报Id
+'
+        primary key,
+    commodity_id bigint                                     not null comment '被举报物品Id
+',
+    user_id      bigint                                     not null comment '举报者',
+    reason       varchar(255)                               not null comment '举报理由',
+    audit_state  tinyint unsigned default 0                 not null comment '审核状态',
+    create_time  datetime         default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time  datetime         default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint t_reports_commodityId_user_id_uindex
+        unique (commodity_id, user_id)
+)
+    comment '举报表';
+
+create table t_user
+(
+    user_id         bigint auto_increment comment '用户ID'
+        primary key,
+    username        varchar(20)                                not null comment '用户名',
+    passwd          char(60)                                   not null comment '密码',
+    address         varchar(255)     default '【未设置地址】'         not null comment '地址',
+    sex             tinyint unsigned default 0                 not null comment '性别',
+    user_role       tinyint unsigned default 0                 not null comment '角色',
+    user_status     tinyint unsigned default 1                 not null comment '账号状态（1：激活，0封号）',
+    commodities_num tinyint unsigned default 0                 not null comment '该用户名下的商品数量',
+    create_time     datetime         default CURRENT_TIMESTAMP not null comment '创建时间',
+    update_time     datetime         default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    constraint t_user_username_uindex
+        unique (username)
+);
+
